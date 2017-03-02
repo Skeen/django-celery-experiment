@@ -1,0 +1,20 @@
+<h1>{{ task.id }}</h1>
+
+<script>
+setTimeout(function()
+{
+    location.reload();
+}, 1000);
+</script>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<ul>
+    <li>ID: {{ task.id }}</li>
+    <li>State: {{ task.state }}</li>
+    <li>Running: {{ task.running }}</li>
+    <li>Success: {{ task.succeeded }}</li>
+    <li>Failure: {{ task.failure }}</li>
+    <li>Result: {{ task.result }}</li>
+    <li>Progress: {{ task.progress }}</li>
+</ul>
