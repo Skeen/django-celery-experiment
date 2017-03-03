@@ -31,10 +31,8 @@ def test(request):
 
 def start(request):
     """ Start a computationally intensive job, then forward to the waiting page """
-    job = do_work.delay(total=60)
-    task = Task(id = job.id)
-    task.save()
-    return HttpResponseRedirect(reverse('cel:detail', kwargs={'pk': task.id}))
+    job = do_work.delay(total=60, failure=False)
+    return HttpResponseRedirect(reverse('cel:detail', kwargs={'pk': job.id}))
 
 
 def progress(request, task_id):
