@@ -20,6 +20,12 @@ class DumpTask(celery.Task):
         task.save()
         return res;
 
+    #def run(self, *args, **kwargs):
+    #    task = Task(id = self.request.id)
+    #    task.name = self.name
+    #    task.save()
+    #    return super(DumpTask, self).run(*args, **kwargs);
+
     def update_state(self, task_id=None, state=None, meta=None):
         task = Task.objects.get(id=self.request.id)
         task.state = state;
@@ -51,7 +57,8 @@ class DumpTask(celery.Task):
 
     # Set the total number of subtasks to do
     def setTotal(self, value):
-        task = Task.objects.get(id=self.request.id)
+        task, created = Task.objects.get_or_create(id=self.request.id)
+        task.name = self.name
         task.total = value;
         task.save();
 
@@ -70,6 +77,28 @@ class DumpTask(celery.Task):
         if(task.current > task.total):
             raise ValueError("Setting current above total!");
         task.save();
+
+from celery.task.schedules import crontab
+from celery.decorators import periodic_task
+import requests
+import re
+
+from django.utils import encoding
+
+def escape_ansi(line):
+    ansi_escape = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+    return ansi_escape.sub('', line)
+
+@shared_task(base=DumpTask, bind=True, name="periodic_task")
+def some_task(self):
+    self.setTotal(1);
+    r = requests.get("http://wttr.in/Aarhus");
+    self.incrementCurrent();
+    utf8string = r.content.decode("utf8")
+    utf8short = '\n'.join(utf8string.split('\n')[:7]);
+    print(utf8short);
+    return escape_ansi(utf8short)
+    #return utf8short #encoding.smart_str(utf8short, encoding='ascii', errors='replace')
 
 @shared_task(base=DumpTask, bind=True)
 def add(self, x, y):

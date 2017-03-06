@@ -98,3 +98,6 @@ ENV/
 # OSX filesystem
 ._.DS_Store
 .DS_Store
+
+# No PID files
+*.pid
