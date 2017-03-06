@@ -8,11 +8,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'progress.settings')
 app = Celery('progres')
 
 app.conf.beat_schedule = {
-    'add-every-30-seconds': {
-        'task': 'cel.tasks.add',
-        'schedule': 30.0,
-        'args': (16, 16)
-    },
+    #'add-every-30-seconds': {
+    #    'task': 'cel.tasks.add',
+    #    'schedule': 30.0,
+    #    'args': (16, 16)
+    #},
     'get-weather-top-of-hour': {
         'task': 'periodic_task',
         'schedule': 30.0,
